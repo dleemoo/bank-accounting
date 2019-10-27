@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker build . --tag dleemoo/bank-accounting:$(cat VERSION)

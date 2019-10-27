@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+  bank-accounting:
+    image: $DOCKER_IMAGE
+    container_name: bank-accounting
+    command: bundle exec rails server --binding=0.0.0.0
+    env_file:
+      - .env
+    ports:
+      - $EXTERNAL_PORT:3000
+    volumes:
+      - .:/app
+      - gems_home:/gems
+      - user_home:/home/app
+    tty: true
+    stdin_open: true
+    depends_on:
+      - pgdb12
+
+  pgdb12:
+    image: postgres:12.0
+    volumes:
+      - pgdb12-data:/var/lib/postgresql/data
+
+volumes:
+  gems_home:
+    name: bank-accounting-gems-home
+  user_home:
+    name: bank-accounting-user-home
+  pgdb12-data:
+    name: bank-accounting-pgdb12
