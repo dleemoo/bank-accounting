@@ -1,0 +1,17 @@
+AllCops:
+  TargetRubyVersion: 2.6.5
+  Exclude:
+    - "tmp/**/*"
+    - "db/schema.rb"
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Bundler/OrderedGems:
+  Enabled: false
