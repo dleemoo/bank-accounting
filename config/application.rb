@@ -3,14 +3,14 @@ require_relative 'boot'
 require "rails"
 # Pick the frameworks you want:
 require "active_model/railtie"
-require "active_job/railtie"
+# require "active_job/railtie"
 require "active_record/railtie"
 # require "active_storage/engine"
 require "action_controller/railtie"
 # require "action_mailer/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
-require "action_view/railtie"
+# require "action_view/railtie"
 # require "action_cable/engine"
 # require "sprockets/railtie"
 # require "rails/test_unit/railtie"
@@ -33,5 +33,24 @@ module BankAccounting
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # config logger
+    config.log_formatter = ::Logger::Formatter.new
+    if ENV['DISABLE_STDOUT_LOG'] != 'true' && !Rails.env.test?
+      logger = ActiveSupport::Logger.new(STDOUT)
+      config.logger = ActiveSupport::TaggedLogging.new(logger)
+    end
+
+    # rails do not serve any public file
+    config.public_file_server.enabled = false
+
+    # use uuids for primary and foreign keys
+    config.generators do |g|
+      g.orm :active_record, primary_key_type: :uuid
+      g.orm :active_record, foreign_key_type: :uuid
+    end
+
+    # use sql schema to allows use of the database features
+    config.active_record.schema_format = :sql
   end
 end
