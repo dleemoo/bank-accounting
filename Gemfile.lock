@@ -162,6 +162,9 @@ GEM
     rubocop-rspec (1.36.0)
       rubocop (>= 0.68.1)
     ruby-progressbar (1.10.1)
+    scenic (1.5.1)
+      activerecord (>= 4.0.0)
+      railties (>= 4.0.0)
     simplecov (0.17.1)
       docile (~> 1.1)
       json (>= 1.8, < 3)
@@ -199,6 +202,7 @@ DEPENDENCIES
   rspec-rails (= 3.9.0)
   rubocop (= 0.76.0)
   rubocop-rspec (= 1.36.0)
+  scenic (= 1.5.1)
   simplecov (= 0.17.1)
 
 RUBY VERSION

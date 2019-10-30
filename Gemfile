@@ -12,6 +12,8 @@ gem "rake", "13.0.0"
 
 # postgresql database as datastore
 gem "pg", "1.1.4"
+# managed and versioned database views
+gem "scenic", "1.5.1"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", "1.4.5", require: false
