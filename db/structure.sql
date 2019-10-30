@@ -73,6 +73,21 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: transactions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.transactions (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    account_id uuid NOT NULL,
+    operation_id uuid NOT NULL,
+    amount numeric NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT non_zero_amount_on_transactions CHECK ((amount <> (0)::numeric))
+);
+
+
+--
 -- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -105,10 +120,48 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT transactions_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: index_accounts_on_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX index_accounts_on_name ON public.accounts USING btree (name);
+
+
+--
+-- Name: index_transactions_on_account_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_account_id ON public.transactions USING btree (account_id);
+
+
+--
+-- Name: index_transactions_on_operation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_transactions_on_operation_id ON public.transactions USING btree (operation_id);
+
+
+--
+-- Name: transactions fk_rails_01f020e267; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT fk_rails_01f020e267 FOREIGN KEY (account_id) REFERENCES public.accounts(id);
+
+
+--
+-- Name: transactions fk_rails_8512b362e5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.transactions
+    ADD CONSTRAINT fk_rails_8512b362e5 FOREIGN KEY (operation_id) REFERENCES public.operations(id);
 
 
 --
@@ -120,6 +173,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20191028000515'),
 ('20191029035954'),
-('20191029040013');
+('20191029040013'),
+('20191029040225');
 
 
