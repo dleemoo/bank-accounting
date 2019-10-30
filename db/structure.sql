@@ -52,6 +52,18 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: operations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.operations (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    kind character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -77,6 +89,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 
 --
+-- Name: operations operations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.operations
+    ADD CONSTRAINT operations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -99,6 +119,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20191028000515'),
-('20191029035954');
+('20191029035954'),
+('20191029040013');
 
 
