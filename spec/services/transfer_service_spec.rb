@@ -68,6 +68,17 @@ RSpec.describe TransferService do
       expect(result.failure.errors.to_h).to eq(amount: ["must be greater than 0"])
     end
 
+    it "does not allow the same account for source and target" do
+      result = nil
+
+      expect { result = service.call(source_account_id: source_account.id, target_account_id: source_account.id, amount: 10) }
+        .to change(Transaction, :count).by(0)
+        .and change(Operation, :count).by(0)
+
+      expect(result).to be_failure
+      expect(result.failure.errors.to_h).to eq(target_account_id: ["is equal to source_account_id"])
+    end
+
     it "denies transfers to inexistent source account" do
       result = service.call(source_account_id: SecureRandom.uuid, target_account_id: target_account.id, amount: 10)
 

@@ -15,6 +15,8 @@ class TransferService
     source = yield fetch_account(params, :source_account_id)
     target = yield fetch_account(params, :target_account_id)
 
+    return same_account_error if source.id == target.id
+
     Success(transfer!(source, target, params[:amount]))
   rescue InsufficientFunds
     Error(source_account_id: ["insufficient funds"])
@@ -37,5 +39,9 @@ class TransferService
         Credit.create!(account: target, operation: operation, amount: amount)
       end
     end
+  end
+
+  def same_account_error
+    Error(target_account_id: ["is equal to source_account_id"])
   end
 end
