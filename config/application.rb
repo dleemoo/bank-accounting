@@ -21,6 +21,8 @@ require "action_controller/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+require_relative "../lib/middlewares/catch_json_parse_errors"
+
 module BankAccounting
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
@@ -54,5 +56,10 @@ module BankAccounting
 
     # use sql schema to allows use of the database features
     config.active_record.schema_format = :sql
+
+    # Add custom middleware to show a better message for malformed JSON.
+    # This also make production and developmet to have the same behavior, since
+    # that by default in production rails ends up generating a error 500.
+    config.middleware.use Middlewares::CatchJsonParseErrors
   end
 end
