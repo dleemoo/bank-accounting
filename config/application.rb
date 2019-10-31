@@ -22,6 +22,7 @@ require "action_controller/railtie"
 Bundler.require(*Rails.groups)
 
 require_relative "../lib/middlewares/catch_json_parse_errors"
+require_relative "../lib/middlewares/enforce_json_request"
 
 module BankAccounting
   class Application < Rails::Application
@@ -56,6 +57,9 @@ module BankAccounting
 
     # use sql schema to allows use of the database features
     config.active_record.schema_format = :sql
+
+    # Add a middleware to ensure that we only accept JSON requests
+    config.middleware.use Middlewares::EnforceJsonRequest
 
     # Add custom middleware to show a better message for malformed JSON.
     # This also make production and developmet to have the same behavior, since
