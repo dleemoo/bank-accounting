@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  constraints format: :json do
+    post "accounts", to: "accounts/create#call"
+    post "deposit", to: "operations/deposit#call"
+    post "balance", to: "operations/balance#call"
+    post "transfer", to: "operations/transfer#call"
+  end
 end
