@@ -2,7 +2,7 @@ module FirstLevel
   module SomeItem
     class << self
       def call
-        OtherItem
+        self::OtherItem
       end
     end
   end
