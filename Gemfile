@@ -7,7 +7,7 @@ ruby "2.6.5"
 
 # basic gems for the framewrok and api
 gem "rails", "6.0.0"
-gem "puma", "4.2.1"
+gem "puma", "4.3.9"
 gem "rake", "13.0.0"
 
 # postgresql database as datastore
