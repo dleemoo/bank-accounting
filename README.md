@@ -188,3 +188,4 @@ Não foi tratado a questão de casas decimais, então operações com mais de du
 casas decimais funcionarão. O que não faz muito sentido, já que não se trata de
 um sistema de posto de gasolina :grin:.
 
+
