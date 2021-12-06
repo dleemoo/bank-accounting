@@ -187,5 +187,3 @@ Via e-mail, também foi enviado um feedback sobre minhas dúvidas.
 Não foi tratado a questão de casas decimais, então operações com mais de duas
 casas decimais funcionarão. O que não faz muito sentido, já que não se trata de
 um sistema de posto de gasolina :grin:.
-
-
