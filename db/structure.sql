@@ -32,7 +32,7 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.accounts (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     name character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
@@ -56,7 +56,7 @@ CREATE TABLE public.ar_internal_metadata (
 --
 
 CREATE TABLE public.transactions (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     account_id uuid NOT NULL,
     operation_id uuid NOT NULL,
     amount numeric NOT NULL,
@@ -101,7 +101,7 @@ CREATE VIEW public.debits AS
 --
 
 CREATE TABLE public.operations (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     kind character varying NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL

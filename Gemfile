@@ -6,35 +6,35 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.1.2"
 
 # basic gems for the framewrok and api
-gem "rails", "6.0.0"
-gem "puma", "4.2.1"
-gem "rake", "13.0.0"
+gem "rails", "7.0.3.1"
+gem "puma", "5.6.5"
+gem "rake", "13.0.6"
 
 # postgresql database as datastore
-gem "pg", "1.1.4"
+gem "pg", "1.4.3"
 # managed and versioned database views
-gem "scenic", "1.5.1"
+gem "scenic", "1.6.0"
 
 # monads to implement railway oriented programming
-gem "dry-monads", "1.3.1"
+gem "dry-monads", "1.4.0"
 
 # gems to implement contract validation with types with interfaces
-gem "dry-schema", "1.4.1"
-gem "dry-types", "1.2.0"
-gem "dry-struct", "1.1.1"
+gem "dry-schema", "1.10.2"
+gem "dry-types", "1.5.1"
+gem "dry-struct", "1.4.0"
 
 # Reduces boot times through caching; required in config/boot.rb
-gem "bootsnap", "1.4.5", require: false
+gem "bootsnap", "1.13.0", require: false
 
 group :development, :test do
-  gem "pry-byebug", "3.7.0"
+  gem "pry", "0.14.1"
   gem "pry-rails", "0.3.9"
-  gem "rspec-rails", "3.9.0"
-  gem "brakeman", "4.7.1"
-  gem "rubocop", "0.76.0", require: false
-  gem "rubocop-rspec", "1.36.0", require: false
+  gem "rspec-rails", "5.1.2"
+  gem "brakeman", "5.3.1"
+  gem "rubocop", "1.35.1", require: false
+  gem "rubocop-rspec", "2.12.1", require: false
 end
 
 group :test do
-  gem "simplecov", "0.17.1"
+  gem "simplecov", "0.21.2"
 end
