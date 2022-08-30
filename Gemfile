@@ -32,7 +32,6 @@ group :development, :test do
   gem "rspec-rails", "5.1.2"
   gem "brakeman", "5.3.1"
   gem "rubocop", "1.35.1", require: false
-  gem "rubocop-rspec", "2.12.1", require: false
 end
 
 group :test do

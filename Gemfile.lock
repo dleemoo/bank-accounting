@@ -217,8 +217,6 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.21.0)
       parser (>= 3.1.1.0)
-    rubocop-rspec (2.12.1)
-      rubocop (~> 1.31)
     ruby-progressbar (1.11.0)
     scenic (1.6.0)
       activerecord (>= 4.0.0)
@@ -258,7 +256,6 @@ DEPENDENCIES
   rake (= 13.0.6)
   rspec-rails (= 5.1.2)
   rubocop (= 1.35.1)
-  rubocop-rspec (= 2.12.1)
   scenic (= 1.6.0)
   simplecov (= 0.21.2)
 
