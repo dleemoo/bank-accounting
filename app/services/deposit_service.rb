@@ -25,7 +25,7 @@ class DepositService
   def deposit!(account, amount)
     account.transaction do
       Operation.create!(kind: "deposit").tap do |operation|
-        Credit.create!(account: account, operation: operation, amount: amount)
+        Transaction.create!(account: account, operation: operation, amount: amount)
       end
     end
   end

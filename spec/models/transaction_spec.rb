@@ -43,7 +43,8 @@ RSpec.describe Transaction, type: :model do
       params = { operation: operation, account: account }
 
       expect { Transaction.create(params) }
-        .to raise_error(ActiveRecord::NotNullViolation, /null value in column "amount" violates not-null constraint/)
+        .to raise_error(ActiveRecord::NotNullViolation,
+                        /null value in column "amount" of relation "transactions" violates not-null constraint/)
         .and change(Transaction, :count).by(0)
     end
 

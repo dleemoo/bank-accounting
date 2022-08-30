@@ -13,8 +13,8 @@ RSpec.describe Account, type: :model do
   context "with invalid parameters" do
     it "raises an exception if the name is missing" do
       expect { Account.create(name: nil) }
-        .to raise_error(ActiveRecord::NotNullViolation, /null value in column "name" violates not-null constraint/)
-        .and change(Account, :count).by(0)
+        .to raise_error(ActiveRecord::NotNullViolation,
+                        /null value in column "name" of relation "accounts" violates not-null constraint/)
     end
 
     it "denies duplicated account names" do
