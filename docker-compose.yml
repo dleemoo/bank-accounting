@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   bank-accounting:
-    image: $DOCKER_IMAGE
+    image: local-development/bank-accounting:cd36a1a
     container_name: bank-accounting
     command: bundle exec rails server --binding=0.0.0.0
     env_file:
@@ -11,7 +11,7 @@ services:
       - $EXTERNAL_PORT:3000
     volumes:
       - .:/app
-      - gems_home:/gems
+      - gems_home:/vendor
       - user_home:/home/dev
     tty: true
     stdin_open: true

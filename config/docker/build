@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-docker build \
-  --tag dleemoo/bank-accounting:"$(cat VERSION)" \
-  --build-arg APP_USER_ID="$(id -u)" \
-  --build-arg APP_GROUP_ID="$(id -g)" \
-  .

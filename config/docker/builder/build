@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dir="$(realpath "$(dirname "$0")")"
+app=$(realpath "${dir}/../../..")
+
+docker buildx build \
+  --progress plain \
+  --tag "$("$dir"/current-image)" \
+  --build-arg APP_USER_ID="$(id -u)" \
+  --build-arg APP_GROUP_ID="$(id -g)" \
+  --file "$dir/Dockerfile" \
+  "$app"
