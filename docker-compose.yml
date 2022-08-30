@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 
 services:
   bank-accounting:
@@ -12,21 +12,24 @@ services:
     volumes:
       - .:/app
       - gems_home:/gems
-      - user_home:/home/app
+      - user_home:/home/dev
     tty: true
     stdin_open: true
     depends_on:
-      - pgdb12
+      - db
 
-  pgdb12:
-    image: postgres:12.0
+  db:
+    image: postgres:14.5-alpine
+    container_name: bank-accounting-db
     volumes:
-      - pgdb12-data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
 volumes:
   gems_home:
     name: bank-accounting-gems-home
   user_home:
     name: bank-accounting-user-home
-  pgdb12-data:
-    name: bank-accounting-pgdb12
+  db_data:
+    name: bank-accounting-pgdb14

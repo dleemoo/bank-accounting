@@ -1,44 +1,49 @@
-FROM debian:10.1-slim
+FROM debian:11.4-slim
 
 MAINTAINER Leonardo Lobo Lima <dleemoo@gmail.com>
-
-ENV LANG=C.UTF-8 \
-    APP_USER_ID=1000 \
-    APP_GROUP_ID=100 \
-    APP_HOME=/app \
-    APP_USER_HOME=/home/app \
-    GOSU_DOWNLOAD_SHA256=0b843df6d86e270c5b0f5cbd3c326a04e18f4b7f9b8457fa497b0454c4b138d7 \
-    ENTRYPOINT_SHA256=40cb6c9eec89788799722d2cc723ec9fbae22271a77763df2b90a4d8b7446100
 
 RUN set -ex \
   # add debian packages for essential runtime libraries
   && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-     apt-transport-https autoconf bison build-essential curl git libffi-dev \
-     libgdbm-dev libncurses-dev libreadline-dev libssl-dev libyaml-dev zlib1g-dev
+     apt-transport-https autoconf bash bison build-essential curl git less \
+     libffi-dev libgdbm-dev libncurses-dev libreadline-dev libssl-dev \
+     libyaml-dev pkg-config zlib1g-dev
 
-RUN set -ex \
+ARG APP_USER_ID \
+    APP_GROUP_ID
+
+ENV LANG=C.UTF-8 \
+    APP_HOME=/app \
+    APP_USER_HOME=/home/dev \
+    GOSU_DOWNLOAD_SHA256=bd8be776e97ec2b911190a82d9ab3fa6c013ae6d3121eea3d0bfd5c82a0eaf8c \
+    ENTRYPOINT_SHA256=a3e8beda15e6474559e85b81811eafab94bc3213a00da124a93002511bc2ed8f
+
+RUN set -eux \
   #
   # Basic setup (packages) and entrypoint for use container as normal user
   #
   # files to run container as normal user
-  && curl -sfL https://git.io/fjHqX -o /usr/share/entrypoint.sh \
-  && curl -sfL https://github.com/tianon/gosu/releases/download/1.11/gosu-amd64 -o /usr/local/bin/gosu \
+  && curl -sfL https://bit.ly/3Q1sDK7 -o /usr/share/entrypoint.sh \
+  && curl -sfL https://github.com/tianon/gosu/releases/download/1.14/gosu-amd64 -o /usr/local/bin/gosu \
   # check files integrity
   && echo "$GOSU_DOWNLOAD_SHA256 /usr/local/bin/gosu" | sha256sum -c - \
   && echo "$ENTRYPOINT_SHA256 /usr/share/entrypoint.sh" | sha256sum -c - \
   # setup basic environment to run as normal user and use /gems/bin
   && mkdir -p $APP_HOME $APP_USER_HOME \
   && chmod +x /usr/share/entrypoint.sh /usr/local/bin/gosu \
-  && useradd --uid $APP_USER_ID --gid $APP_GROUP_ID app \
-  && chown -R app. $APP_HOME $APP_USER_HOME \
+  && group_name=$(grep :x:$APP_GROUP_ID: /etc/group | cut -d: -f1) \
+  && [ -n "$group_name" ] || addgroup --gid $APP_GROUP_ID dev \
+  && [ -n "$group_name" ] || group_name=dev \
+  && useradd --create-home --uid $APP_USER_ID --gid $group_name dev \
+  && chown -R dev. $APP_HOME $APP_USER_HOME \
   # clean up apt files
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-ENV PG_VERSION=12.0 \
-    PG_DOWNLOAD_SHA256=15c7f267b476d764c79401d7f61f39c76222314951f77e6893a5854db26b6616
+ENV PG_VERSION=14.5 \
+    PG_DOWNLOAD_SHA256=90ead393dbc654cb0075eaaf0ec2058e6b9866ced478fed3cf2b68a5bc04eb24
 
 RUN set -ex \
   #
@@ -47,15 +52,9 @@ RUN set -ex \
   && curl -sL http://ftp.postgresql.org/pub/source/v${PG_VERSION}/postgresql-${PG_VERSION}.tar.gz -o /tmp/postgresql.tar.gz \
   && echo "$PG_DOWNLOAD_SHA256 /tmp/postgresql.tar.gz" | sha256sum -c - \
   && mkdir -p /tmp/postgresql \
-  && tar -xzf /tmp/postgresql.tar.gz -C /tmp/postgresql --strip-components=1
-
-RUN set -ex \
+  && tar -xzf /tmp/postgresql.tar.gz -C /tmp/postgresql --strip-components=1 \
   && cd /tmp/postgresql \
-  && echo "Building postgresql ..." \
-  && CFLAGS="-O3 -pipe" ./configure --prefix=/usr/local 1>/dev/null
-
-RUN set -ex \
-  && cd /tmp/postgresql \
+  && CFLAGS="-O3 -pipe" ./configure --prefix=/usr/local 1>/dev/null \
   && make -j"$(getconf _NPROCESSORS_ONLN)" \
   && make -j"$(getconf _NPROCESSORS_ONLN)" -C src/include install \
   && make -j"$(getconf _NPROCESSORS_ONLN)" -C src/bin install \
@@ -63,9 +62,9 @@ RUN set -ex \
   && cd /tmp \
   && rm -rf /tmp/postgresql*
 
-ENV RUBY_MAJOR=2.6 \
-    RUBY_VERSION=2.6.5 \
-    RUBY_DOWNLOAD_SHA256=66976b716ecc1fd34f9b7c3c2b07bbd37631815377a2e3e85a5b194cfdcbed7d
+ENV RUBY_MAJOR=3.1 \
+    RUBY_VERSION=3.1.2 \
+    RUBY_DOWNLOAD_SHA256=ca10d017f8a1b6d247556622c841fc56b90c03b1803f87198da1e4fd3ec3bf2a
 
 RUN set -ex \
   #
@@ -105,7 +104,7 @@ RUN set -ex \
   #
   && sed -i s@'PATH="\(.*\)"'@'PATH="/gems/bin:\1"'@g /etc/profile \
   && mkdir -p $BUNDLE_BIN \
-  && chown -R app. $GEM_HOME
+  && chown -R dev. $GEM_HOME
 
 WORKDIR $APP_HOME
 
