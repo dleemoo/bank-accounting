@@ -2,35 +2,35 @@
 
 require "rails_helper"
 
-RSpec.describe AccountFactory do
-  subject(:factory) { described_class }
+RSpec.describe Account::Create do
+  subject(:use_case) { described_class }
 
   context "with valid parameters" do
     it "creates a new Account" do
       result = nil
 
-      expect { result = factory.call(name: "My Account") }
+      expect { result = use_case.call(name: "My Account") }
         .to change(Account, :count).by(1)
 
       expect(result).to be_success
-      expect(result.value!.name).to eq("My Account")
+      expect(result[:account].name).to eq("My Account")
     end
   end
 
   context "with invalid paramaters" do
     it "denies when missing name attribute" do
-      result = factory.call(name: "")
+      result = use_case.call(name: "")
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(name: ["must be filled"])
+      expect(result.value).to eq(name: ["is missing"])
     end
 
     it "dines duplicated account names" do
-      factory.call(name: "My Account")
-      result = factory.call(name: "My Account")
+      use_case.call(name: "My Account")
+      result = use_case.call(name: "My Account")
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(name: ["already taken"])
+      expect(result.value).to eq(name: ["already taken"])
     end
   end
 end
