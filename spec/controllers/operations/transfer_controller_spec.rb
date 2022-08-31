@@ -32,5 +32,15 @@ RSpec.describe Operations::TransferController, type: :controller do
         expect(response.body).to eq(JSON(source_account_id: ["insufficient funds"]))
       end
     end
+
+    context "when input is not valid" do
+      it "returns http failure with service message" do
+        deposit.call(acocunt_id: account.id, amount: 100)
+        post :call, params: { source_account_id: account.id, target_account_id: nil, amount: 150 }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to eq(JSON(target_account_id: ["is missing"]))
+      end
+    end
   end
 end

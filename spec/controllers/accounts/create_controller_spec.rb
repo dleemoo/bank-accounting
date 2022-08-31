@@ -26,5 +26,16 @@ RSpec.describe Accounts::CreateController, type: :controller do
         expect(response.body).to eq(JSON(name: ["is missing"]))
       end
     end
+
+    context "when account already exists" do
+      it "returns http failure with service message" do
+        Account.create!(name: "acc")
+
+        post :call, params: { name: "acc" }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to eq(JSON(name: ["already taken"]))
+      end
+    end
   end
 end

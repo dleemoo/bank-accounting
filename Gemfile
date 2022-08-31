@@ -15,6 +15,9 @@ gem "pg", "1.4.3"
 # managed and versioned database views
 gem "scenic", "1.6.0"
 
+# u-case
+gem "u-case", "4.5.1"
+
 # monads to implement railway oriented programming
 gem "dry-monads", "1.4.0"
 
