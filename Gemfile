@@ -18,14 +18,6 @@ gem "scenic", "1.6.0"
 # u-case
 gem "u-case", "4.5.1"
 
-# monads to implement railway oriented programming
-gem "dry-monads", "1.4.0"
-
-# gems to implement contract validation with types with interfaces
-gem "dry-schema", "1.10.2"
-gem "dry-types", "1.5.1"
-gem "dry-struct", "1.4.0"
-
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", "1.13.0", require: false
 
