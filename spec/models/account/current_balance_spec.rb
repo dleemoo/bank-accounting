@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Account::CurrentBalance do
   subject(:use_case) { described_class }
   let(:account) { Account.create!(name: "acc") }
-  let(:deposit) { DepositService }
+  let(:deposit) { Account::DepositNewAmount }
 
   context "with valid parameters" do
     context "when account has no value" do

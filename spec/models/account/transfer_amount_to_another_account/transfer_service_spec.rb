@@ -5,8 +5,8 @@ require "rails_helper"
 RSpec.describe Account::TransferAmountToAnotherAccount do
   subject(:use_case) { described_class }
 
-  let(:deposit) { DepositService }
-  let(:balance) { BalanceService }
+  let(:deposit) { Account::DepositNewAmount }
+  let(:balance) { Account::CurrentBalance }
 
   let(:source_account) { Account.create!(name: "source account") }
   let(:target_account) { Account.create!(name: "target account") }
@@ -33,8 +33,8 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
       expect(operation.debit.amount).to eq(-10)
       expect(operation.source_account).to eq(source_account)
 
-      expect(balance.call(account_id: source_account.id).value!).to eq(90)
-      expect(balance.call(account_id: target_account.id).value!).to eq(10)
+      expect(balance.call(account_id: source_account.id).value[:amount]).to eq(90)
+      expect(balance.call(account_id: target_account.id).value[:amount]).to eq(10)
     end
   end
 
@@ -51,8 +51,8 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
       expect(result).to be_failure
       expect(result.value).to eq(source_account_id: ["insufficient funds"])
 
-      expect(balance.call(account_id: source_account.id).value!).to eq(100)
-      expect(balance.call(account_id: target_account.id).value!).to eq(0)
+      expect(balance.call(account_id: source_account.id).value[:amount]).to eq(100)
+      expect(balance.call(account_id: target_account.id).value[:amount]).to eq(0)
     end
   end
 

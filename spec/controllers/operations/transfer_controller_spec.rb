@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Operations::TransferController, type: :controller do
   let(:account) { Account.create!(name: "my-account") }
   let(:target_account) { Account.create!(name: "target-account") }
-  let(:deposit) { DepositService }
+  let(:deposit) { Account::DepositNewAmount }
 
   before do
     stub_const "ENV", "AUTH_TOKEN" => "VALID_TOKEN"
