@@ -2,8 +2,8 @@
 
 require "rails_helper"
 
-RSpec.describe TransferService do
-  subject(:service) { described_class }
+RSpec.describe Account::TransferAmountToAnotherAccount do
+  subject(:use_case) { described_class }
 
   let(:deposit) { DepositService }
   let(:balance) { BalanceService }
@@ -17,13 +17,13 @@ RSpec.describe TransferService do
 
       result = nil
 
-      expect { result = service.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 10) }
+      expect { result = use_case.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 10) }
         .to change(Transaction.where(account_id: source_account), :count).by(1)
         .and change(Transaction.where(account_id: target_account), :count).by(1)
 
       expect(result).to be_success
 
-      operation = result.value!
+      operation = Operation.find(result.value["id"])
 
       expect(operation.kind).to eq("transfer")
 
@@ -44,12 +44,12 @@ RSpec.describe TransferService do
 
       result = nil
 
-      expect { result = service.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 100.01) }
+      expect { result = use_case.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 100.01) }
         .to change(Transaction.where(account_id: source_account), :count).by(0)
         .and change(Transaction.where(account_id: target_account), :count).by(0)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(source_account_id: ["insufficient funds"])
+      expect(result.value).to eq(source_account_id: ["insufficient funds"])
 
       expect(balance.call(account_id: source_account.id).value!).to eq(100)
       expect(balance.call(account_id: target_account.id).value!).to eq(0)
@@ -60,51 +60,51 @@ RSpec.describe TransferService do
     it "does not allows negative transfers" do
       result = nil
 
-      expect { result = service.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: -10) }
+      expect { result = use_case.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: -10) }
         .to change(Transaction, :count).by(0)
         .and change(Operation, :count).by(0)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(amount: ["must be greater than 0"])
+      expect(result.value).to eq(amount: ["must be greater than 0"])
     end
 
     it "does not allow the same account for source and target" do
       result = nil
 
-      expect { result = service.call(source_account_id: source_account.id, target_account_id: source_account.id, amount: 10) }
+      expect { result = use_case.call(source_account_id: source_account.id, target_account_id: source_account.id, amount: 10) }
         .to change(Transaction, :count).by(0)
         .and change(Operation, :count).by(0)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(target_account_id: ["is equal to source_account_id"])
+      expect(result.value).to eq(target_account_id: ["is equal to source_account_id"])
     end
 
     it "denies transfers to inexistent source account" do
-      result = service.call(source_account_id: SecureRandom.uuid, target_account_id: target_account.id, amount: 10)
+      result = use_case.call(source_account_id: SecureRandom.uuid, target_account_id: target_account.id, amount: 10)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(source_account_id: ["not found"])
+      expect(result.value).to eq(source_account_id: ["not found"])
     end
 
     it "denies transfers to inexistent target account" do
-      result = service.call(source_account_id: source_account.id, target_account_id: SecureRandom.uuid, amount: 10)
+      result = use_case.call(source_account_id: source_account.id, target_account_id: SecureRandom.uuid, amount: 10)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(target_account_id: ["not found"])
+      expect(result.value).to eq(target_account_id: ["not found"])
     end
 
     it "denies transfers to invalid source account" do
-      result = service.call(source_account_id: "abc", target_account_id: target_account.id, amount: 10)
+      result = use_case.call(source_account_id: "abc", target_account_id: target_account.id, amount: 10)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(source_account_id: ["is in invalid format"])
+      expect(result.value).to eq(source_account_id: ["is in invalid format"])
     end
 
     it "denies transfers to invalid target account" do
-      result = service.call(source_account_id: source_account.id, target_account_id: "abc", amount: 10)
+      result = use_case.call(source_account_id: source_account.id, target_account_id: "abc", amount: 10)
 
       expect(result).to be_failure
-      expect(result.failure.errors.to_h).to eq(target_account_id: ["is in invalid format"])
+      expect(result.value).to eq(target_account_id: ["is in invalid format"])
     end
   end
 end
