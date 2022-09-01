@@ -5,7 +5,7 @@ require "rails_helper"
 RSpec.describe Operations::TransferController, type: :controller do
   let(:account) { Account.create!(name: "my-account") }
   let(:target_account) { Account.create!(name: "target-account") }
-  let(:deposit) { DepositService }
+  let(:deposit) { Account::DepositNewAmount }
 
   before do
     stub_const "ENV", "AUTH_TOKEN" => "VALID_TOKEN"
@@ -29,7 +29,7 @@ RSpec.describe Operations::TransferController, type: :controller do
         post :call, params: { source_account_id: account.id, target_account_id: target_account.id, amount: 150 }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(source_account_id: ["insufficient funds"]))
+        expect(response.body).to eq(JSON(errors: { source_account_id: ["insufficient funds"] }))
       end
     end
 
@@ -39,7 +39,7 @@ RSpec.describe Operations::TransferController, type: :controller do
         post :call, params: { source_account_id: account.id, target_account_id: nil, amount: 150 }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(target_account_id: ["is missing"]))
+        expect(response.body).to eq(JSON(errors: { target_account_id: ["is not a valid UUID"] }))
       end
     end
   end

@@ -25,7 +25,9 @@ RSpec.describe Operations::DepositController, type: :controller do
         post :call
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(account_id: ["is missing"], amount: ["is missing"]))
+        expect(response.body).to eq(
+          JSON(errors: { account_id: ["is not a valid UUID"], amount: ["is not a number"] })
+        )
       end
     end
 
@@ -34,7 +36,7 @@ RSpec.describe Operations::DepositController, type: :controller do
         post :call, params: { account_id: "5367aaf6-416b-477f-81d6-2cbe02f6f7eb", amount: 20 }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(account_id: ["not found"]))
+        expect(response.body).to eq(JSON(errors: { account_id: ["not found"] }))
       end
     end
   end

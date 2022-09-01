@@ -61,6 +61,9 @@ module BankAccounting
     # use sql schema to allows use of the database features
     config.active_record.schema_format = :sql
 
+    # raise exception when unpermitted parameters are present
+    config.action_controller.action_on_unpermitted_parameters = :raise
+
     # Add a middleware to ensure that we only accept JSON requests
     config.middleware.use Middlewares::EnforceJsonRequest
 

@@ -5,6 +5,10 @@ class ApplicationController < ActionController::API
 
   before_action :authenticate
 
+  rescue_from ActionController::UnpermittedParameters do |exception|
+    respond({ error: "Invalid parameters", params: exception.params }, 401)
+  end
+
   private
 
   def respond(data, status = :ok)

@@ -44,7 +44,7 @@ cd bank-accounting
 cp .example.env .env
 ./config/docker/development/build
 docker-compose run --rm bank-accounting bundle install
-docker-compose run --rm bank-accounting rails db:create db:migrate
+docker-compose run --rm bank-accounting bundle exec rails db:create db:migrate
 ```
 
 Feito estes passos, a qualquer momento a applicação poderá ser executada com o
@@ -68,13 +68,13 @@ alterações no arquivo `.env`:
 
 ## Operação
 
-Para todos os requests é necessário definir os headers `authorization` e
-`content-type`. Por exemplo, um request válido deve ter a forma:
+Para todos os requests é necessário definir os headers `Authorization` e
+`Content-Type`. Por exemplo, um request válido deve ter a forma:
 
 ```shell
 curl --request POST --url http://localhost:4567/some-endpoint \
-  --header 'authorization: Bearer #{ENV['AUTH_TOKEN']}' \
-  --header 'content-type: application/json' \
+  --header 'Authorization: Bearer #{ENV['AUTH_TOKEN']}' \
+  --header 'Content-Type: application/json' \
   --data 'json-payload'
 ```
 
@@ -88,6 +88,8 @@ pode-se utilizar o endpoint `POST /accounts` utilizando como payload:
   "name": "Account 001"
 }
 ```
+
+O retorno deste endpoint é os atributos da nova conta em JSON.
 
 Isso criará uma nova conta e retornará os attributos da nova conta. O `id` das
 contas será necessário nas demais operações.
@@ -132,21 +134,159 @@ Valores podem ser movimentados entre contas atraves do endpoint `POST
 {
   "source_account_id": "uuid-da-conta-de-origem",
   "target_account_id": "uuid-da-conta-de-destino",
-  "amont": 40
+  "amount": 40
 }
 ```
 
 A resposta retornará o registro `Operation` criado para essa operação e o valor
 será movido entre as duas contas informadas.
 
-## Insomnia
+## Exemplos
 
-Há um arquivo com exemplo dos quatro endpoints disponível para o Insomnia
-[disponível](https://github.com/dleemoo/bank-accounting/wiki/insomnia.json).
+Os exemplos nesta seção utilizam a seguinte função bash para facilitar testes
+rápidos (é esperado que um `source $app_root/.env` seja executado antes):
 
-Ele inclui todas as operações e exemplos válidos dos payloads. Só haverá
-necessidade de alterar os `id`s envolvidos e os valores conforme os testes a
-serem realizados.
+```bash
+function http-request() {
+  (
+    set -euo pipefail
+
+    path="${1:-}"
+    [ -n "$path" ] && shift
+
+    curl \
+      --include \
+      --silent \
+      --header "Content-Type: application/json" \
+      --header "Authorization: Bearer $AUTH_TOKEN" \
+      "$@" \
+      "http://localhost:$EXTERNAL_PORT/$path" |
+      sed -e 1b -e '$!d'
+
+    status=$?
+    echo
+    return $status
+  )
+}
+```
+
+### Criando novas contas
+
+```
+http-request /accounts --data '{"name":"Account 001"}'
+HTTP/1.1 201 Created
+{
+  "id":"c62fb1e6-1d16-4a8f-a665-08bf1cdd7aa4",
+  "name":"Account 001",
+  "created_at":"2022-09-01T14:00:40.678Z",
+  "updated_at":"2022-09-01T14:00:40.678Z"
+}
+````
+
+```
+http-request /accounts --data '{"name":"Account 002"}'
+HTTP/1.1 201 Created
+{
+  "id":"6334f85a-1eb6-4166-8cba-f0d7d08447df",
+  "name":"Account 002",
+  "created_at":"2022-09-01T14:01:53.515Z",
+  "updated_at":"2022-09-01T14:01:53.515Z"
+}
+```
+
+### Adicionando saldo a uma conta
+
+```
+http-request /deposit --data '{"account_id":"c62fb1e6-1d16-4a8f-a665-08bf1cdd7aa4","amount":"29456.32"}'
+HTTP/1.1 200 OK
+{
+  "id":"90e13665-de3f-43cf-8702-72ca0c833b5b",
+  "kind":"deposit",
+  "created_at":"2022-09-01T14:04:09.191Z",
+  "updated_at":"2022-09-01T14:04:09.191Z"
+}
+```
+
+### Realizando uma transferência
+
+```
+http-request /transfer \
+  --data '{"source_account_id":"c62fb1e6-1d16-4a8f-a665-08bf1cdd7aa4",\
+  "target_account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447df","amount":"12323.12"}'
+HTTP/1.1 200 OK
+{
+  "id":"fffeb997-87b5-4fbb-89aa-220c2597299e",
+  "kind":"transfer",
+  "created_at":"2022-09-01T14:06:21.950Z",
+  "updated_at":"2022-09-01T14:06:21.950Z"
+}
+```
+
+### Verificando os novos saldos
+
+```
+http-request /balance --data '{"account_id":"c62fb1e6-1d16-4a8f-a665-08bf1cdd7aa4"}'
+HTTP/1.1 200 OK
+{"amount":"17133.2"}
+```
+
+```
+http-request /balance --data '{"account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447df"}'
+HTTP/1.1 200 OK
+{"amount":"12323.12"}
+```
+
+### Alguns exemplos de erros
+
+A API foi construída para que dê o melhor suporte possível para erros e não
+aceita parâmetros não utilizados nas requisições. Segue alguns exemplos.
+
+#### Payload inválido
+
+Exemplo com um JSON faltando uma aspa:
+
+```
+http-request /balance --data '{"account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447df}'
+HTTP/1.1 400 Bad Request
+{"errors":["Invalid JSON"]}
+```
+
+Exemplo com parâmetros inválidos:
+
+
+```
+http-request /balance --data '{"account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447df","invalid":"item","error":true}'
+HTTP/1.1 401 Unauthorized
+{"error":"Invalid parameters","params":["invalid","error"]}
+```
+
+#### Dados inválidos
+
+Formato inválido para o UUID:
+
+```
+http-request /balance --data '{"account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447dg"}'
+HTTP/1.1 422 Unprocessable Entity
+{"errors":{"account_id":["is not a valid UUID"]}}
+```
+
+Conta que não existe:
+
+```
+http-request /balance --data '{"account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447de"}'
+HTTP/1.1 422 Unprocessable Entity
+{"errors":{"account_id":["not found"]}}
+```
+
+Saldo insuficiente para transferência:
+
+```
+http-request /transfer \
+  --data '{"source_account_id":"c62fb1e6-1d16-4a8f-a665-08bf1cdd7aa4",\
+  "target_account_id":"6334f85a-1eb6-4166-8cba-f0d7d08447df","amount":"17133.21"}'
+HTTP/1.1 422 Unprocessable Entity
+{"errors":{"source_account_id":["insufficient funds"]}}
+```
 
 ## Contribuindo
 

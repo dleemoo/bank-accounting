@@ -19,7 +19,7 @@ module Middlewares
     private
 
     def error
-      { body: ["Invalid JSON"] }
+      { errors: ["Invalid JSON"] }
     end
   end
 end

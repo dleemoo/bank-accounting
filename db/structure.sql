@@ -52,51 +52,6 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
--- Name: transactions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.transactions (
-    id uuid DEFAULT gen_random_uuid() NOT NULL,
-    account_id uuid NOT NULL,
-    operation_id uuid NOT NULL,
-    amount numeric NOT NULL,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL,
-    CONSTRAINT non_zero_amount_on_transactions CHECK ((amount <> (0)::numeric))
-);
-
-
---
--- Name: credits; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.credits AS
- SELECT transactions.id,
-    transactions.account_id,
-    transactions.operation_id,
-    transactions.amount,
-    transactions.created_at,
-    transactions.updated_at
-   FROM public.transactions
-  WHERE (transactions.amount > (0)::numeric);
-
-
---
--- Name: debits; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.debits AS
- SELECT transactions.id,
-    transactions.account_id,
-    transactions.operation_id,
-    transactions.amount,
-    transactions.created_at,
-    transactions.updated_at
-   FROM public.transactions
-  WHERE (transactions.amount < (0)::numeric);
-
-
---
 -- Name: operations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -114,6 +69,21 @@ CREATE TABLE public.operations (
 
 CREATE TABLE public.schema_migrations (
     version character varying NOT NULL
+);
+
+
+--
+-- Name: transactions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.transactions (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    account_id uuid NOT NULL,
+    operation_id uuid NOT NULL,
+    amount numeric NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    CONSTRAINT non_zero_amount_on_transactions CHECK ((amount <> (0)::numeric))
 );
 
 
@@ -206,6 +176,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20191029040013'),
 ('20191029040225'),
 ('20191030014152'),
-('20191030014159');
+('20191030014159'),
+('20220831225058');
 
 

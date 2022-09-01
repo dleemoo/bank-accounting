@@ -7,4 +7,6 @@ Rails.application.routes.draw do
     post "balance", to: "operations/balance#call"
     post "transfer", to: "operations/transfer#call"
   end
+
+  root to: proc { [404, {}, [""]] }
 end

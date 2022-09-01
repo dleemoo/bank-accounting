@@ -23,7 +23,7 @@ RSpec.describe Accounts::CreateController, type: :controller do
         post :call
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(name: ["is missing"]))
+        expect(response.body).to eq(JSON(errors: { name: ["can't be blank"] }))
       end
     end
 
@@ -34,7 +34,7 @@ RSpec.describe Accounts::CreateController, type: :controller do
         post :call, params: { name: "acc" }
 
         expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.body).to eq(JSON(name: ["already taken"]))
+        expect(response.body).to eq(JSON(errors: { name: ["has already been taken"] }))
       end
     end
   end

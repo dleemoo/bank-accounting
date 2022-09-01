@@ -12,19 +12,9 @@ gem "rake", "13.0.6"
 
 # postgresql database as datastore
 gem "pg", "1.4.3"
-# managed and versioned database views
-gem "scenic", "1.6.0"
 
 # u-case
-gem "u-case", "4.5.1"
-
-# monads to implement railway oriented programming
-gem "dry-monads", "1.4.0"
-
-# gems to implement contract validation with types with interfaces
-gem "dry-schema", "1.10.2"
-gem "dry-types", "1.5.1"
-gem "dry-struct", "1.4.0"
+gem "u-case", "4.5.1", require: "u-case/with_activemodel_validation"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", "1.13.0", require: false
@@ -34,7 +24,7 @@ group :development, :test do
   gem "pry-rails", "0.3.9"
   gem "rspec-rails", "5.1.2"
   gem "brakeman", "5.3.1"
-  gem "rubocop", "1.35.1", require: false
+  gem "rubocop", "1.36.0", require: false
 end
 
 group :test do
