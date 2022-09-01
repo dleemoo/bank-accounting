@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dir="$(realpath "$(dirname "$0")")"
+
+cd "$dir" || exit 1
+
+files=$(shasum -a 256 build current-image Dockerfile Dockerfile.dockerignore)
+tag=$(echo "$files" | shasum -a 256 | cut -c1-7)
+
+echo "dleemoo/bank-accounting-builder:$tag"

@@ -12,23 +12,26 @@ appropridado (`JSON`).
 ## Setup
 
 Esse repositório contém tudo que é necessário para executar essa aplicação
-utilizando o `docker` e o `docker-compose`. Recomenda-se utilizar as versões:
+utilizando o `docker` e o `docker-compose` nas seguintes versões:
 
-- docker `19.03.3-ce`
-- docker-compose `1.24.1`
+- docker `20.10.17`
+- docker-compose `2.10.2`
 
-É provável que qualquer verão que suporte o compose file na versão `3.7` irá
-funcionar sem problemas, porém só foi testado com as versões acima.
+É provável que qualquer versão que suporte o compose file `3.8` funcionará sem
+problemas, porém só foi testado com as versões acima.
 
-No diretório `config/docker` está disponível o `Dockerfile` utilizado para
-gerar a imagem utilizada no `docker-compose.yml`. Essa imagem está disponível
-no [docker hub](https://hub.docker.com/r/dleemoo/bank-accounting) e não há a
-necessidade de fazer o build da mesma.
+No diretório `config/docker` está disponível um par de `Dockerfile`s utilizado
+para gerar a imagem utilizada no `docker-compose.yml`. A imagem no diretório
+`builder` contém as dependências necessárias no SO e a iamgem no diretório
+`development` ajusta essa imagem para a execução local, evitando erros de
+permissões dos pontos de montagem entre o host e container.
+
+Essa imagem builder está disponível no [docker hub](https://hub.docker.com/r/dleemoo/bank-accounting-builder)
+e não há a necessidade de fazer o build da mesma no ambiente de
+desenvolvimento.
 
 O arquivo `.example.env` contém uma configuração completa e não há necessidade
-de modificações para execução localmente (**desde que o seu usuário no host
-possua o UUID 1000**).
-Essa configuração usa:
+de modificações para execução local:
 
 - porta `4567`, diponibilizando a apllicação em `http://localhost:4567`
 - token `18DC2F0268ABDD37D3024722FC4AEFC065AA0C30`, para authenticação
@@ -39,9 +42,9 @@ Para configurar o ambiente local, basta fazer:
 git clone https://github.com/dleemoo/bank-accounting
 cd bank-accounting
 cp .example.env .env
-docker-compose pull # obterá a imagem da applicação e do postgresql
+./config/docker/development/build
 docker-compose run --rm bank-accounting bundle install
-docker-compose run --rm bank-accounting rake db:create db:migrate
+docker-compose run --rm bank-accounting rails db:create db:migrate
 ```
 
 Feito estes passos, a qualquer momento a applicação poderá ser executada com o
@@ -59,19 +62,9 @@ alterações no arquivo `.env`:
 -# RAILS_ENV=development
 +RAILS_ENV=production
  
--DATABASE_URL=postgres://postgres@pgdb12
-+DATABASE_URL=postgres://postgres@pgdb12/bank_accounting_development
+-DATABASE_URL=postgres://postgres@db
++DATABASE_URL=postgres://postgres@db/bank_accounting_development
 ```
-
-:warning:
-Não há uma forma fácil de executar essa imagem do docker sem ser com um usuário
-que tenha o **UUID** igual a **1000**. Diversos erros de permissão irão
-acontecer e é até possível ajustá-los com um `chmod 1777` (o que será um pouco
-trabalhoso).
-
-Essa imagem não usa o **root** para executar a app dentro do container, porém o
-usuário é hardcoded.
-:warning:
 
 ## Operação
 

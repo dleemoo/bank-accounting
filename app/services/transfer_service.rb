@@ -35,8 +35,8 @@ class TransferService
       raise InsufficientFunds if balance.value! < amount
 
       Operation.create!(kind: "transfer").tap do |operation|
-        Debit.create!(account: source, operation: operation, amount: -amount)
-        Credit.create!(account: target, operation: operation, amount: amount)
+        Transaction.create!(account: source, operation: operation, amount: -amount)
+        Transaction.create!(account: target, operation: operation, amount: amount)
       end
     end
   end

@@ -13,7 +13,8 @@ RSpec.describe Operation, type: :model do
   context "with invalid parameters" do
     it "raises an exception if the name is missing" do
       expect { Operation.create(kind: nil) }
-        .to raise_error(ActiveRecord::NotNullViolation, /null value in column "kind" violates not-null constraint/)
+        .to raise_error(ActiveRecord::NotNullViolation,
+                        /null value in column "kind" of relation "operations" violates not-null constraint/)
         .and change(Operation, :count).by(0)
     end
   end

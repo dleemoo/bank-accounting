@@ -18,8 +18,8 @@ RSpec.describe TransferService do
       result = nil
 
       expect { result = service.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 10) }
-        .to change(Debit.where(account_id: source_account), :count).by(1)
-        .and change(Credit.where(account_id: target_account), :count).by(1)
+        .to change(Transaction.where(account_id: source_account), :count).by(1)
+        .and change(Transaction.where(account_id: target_account), :count).by(1)
 
       expect(result).to be_success
 
@@ -45,8 +45,8 @@ RSpec.describe TransferService do
       result = nil
 
       expect { result = service.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 100.01) }
-        .to change(Debit.where(account_id: source_account), :count).by(0)
-        .and change(Credit.where(account_id: target_account), :count).by(0)
+        .to change(Transaction.where(account_id: source_account), :count).by(0)
+        .and change(Transaction.where(account_id: target_account), :count).by(0)
 
       expect(result).to be_failure
       expect(result.failure.errors.to_h).to eq(source_account_id: ["insufficient funds"])
