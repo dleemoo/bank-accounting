@@ -12,8 +12,6 @@ gem "rake", "13.0.6"
 
 # postgresql database as datastore
 gem "pg", "1.4.3"
-# managed and versioned database views
-gem "scenic", "1.6.0"
 
 # u-case
 gem "u-case", "4.5.1"

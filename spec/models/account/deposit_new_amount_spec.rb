@@ -22,7 +22,7 @@ RSpec.describe Account::DepositNewAmount do
       expect(operation.credit.amount).to eq(10)
       expect(operation.target_account).to eq(account)
 
-      expect(operation.debit).to be_nil
+      expect(operation.debt).to be_nil
       expect(operation.source_account).to be_nil
     end
   end

@@ -30,7 +30,7 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
       expect(operation.credit.amount).to eq(10)
       expect(operation.target_account).to eq(target_account)
 
-      expect(operation.debit.amount).to eq(-10)
+      expect(operation.debt.amount).to eq(-10)
       expect(operation.source_account).to eq(source_account)
 
       expect(balance.call(account_id: source_account.id).value[:amount]).to eq(90)
