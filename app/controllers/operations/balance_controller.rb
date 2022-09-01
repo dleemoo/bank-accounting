@@ -3,9 +3,15 @@
 module Operations
   class BalanceController < ApplicationController
     def call
-      BalanceService.call(request_params!)
-        .fmap { |r| respond(amount: r) }
-        .or   { |r| respond(r.errors.to_h, :unprocessable_entity) }
+      Account::CurrentBalance.call(input)
+        .on_success { |r| respond(r.data) }
+        .on_failure { |r| respond(r.data, :unprocessable_entity) }
+    end
+
+    private
+
+    def input
+      params.permit(:account_id).to_h
     end
   end
 end
