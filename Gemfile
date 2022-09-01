@@ -6,8 +6,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.1.2"
 
 # basic gems for the framewrok and api
-gem "rails", "6.0.5.1"
-gem "psych", "< 4"
+gem "rails", "7.0.3.1"
 gem "puma", "5.6.5"
 gem "rake", "13.0.6"
 
@@ -25,7 +24,7 @@ group :development, :test do
   gem "pry-rails", "0.3.9"
   gem "rspec-rails", "5.1.2"
   gem "brakeman", "5.3.1"
-  gem "rubocop", "1.35.1", require: false
+  gem "rubocop", "1.36.0", require: false
 end
 
 group :test do
