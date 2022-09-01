@@ -8,7 +8,8 @@ class Account
       def call!
         Success(result: persist!.attributes)
       rescue InsufficientFunds
-        Failure(result: { source_account_id: ["insufficient funds"] })
+        errors.add(:source_account_id, "insufficient funds")
+        Failure(:invalid_attributes, result: { errors: errors })
       end
 
       private
@@ -17,14 +18,18 @@ class Account
 
       def persist!
         source_account.with_lock do
-          balance = Account::CurrentBalance.call(account_id: source_account.id)
-          raise InsufficientFunds if balance.value[:amount] < amount
+          validate_account_funds!
 
           Operation.create!(kind: "transfer").tap do |operation|
             Transaction.create!(account: source_account, operation: operation, amount: -amount)
             Transaction.create!(account: target_account, operation: operation, amount: amount)
           end
         end
+      end
+
+      def validate_account_funds!
+        balance = Account::CurrentBalance.call(account_id: source_account.id)
+        raise InsufficientFunds if balance[:amount] < amount
       end
     end
   end

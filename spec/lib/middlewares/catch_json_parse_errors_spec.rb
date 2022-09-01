@@ -21,7 +21,7 @@ RSpec.describe Middlewares::CatchJsonParseErrors do
   end
 
   it "returns a rack response with invalid json information" do
-    error = { body: ["Invalid JSON"] }
+    error = { errors: ["Invalid JSON"] }
 
     expect(subject.call("CONTENT_TYPE" => "application/json; charset=utf-8"))
       .to eq([400, { "Content-Type" => "application/json" }, [error.to_json]])

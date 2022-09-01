@@ -5,9 +5,9 @@ class Account
     class ValidateInput < Micro::Case
       attributes :name
 
-      def call!
-        return Failure(result: { name: ["is missing"] }) if name.blank?
+      validates :name, presence: true
 
+      def call!
         Success(result: { name: name })
       end
     end

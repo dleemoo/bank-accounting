@@ -15,7 +15,7 @@ gem "rake", "13.0.6"
 gem "pg", "1.4.3"
 
 # u-case
-gem "u-case", "4.5.1"
+gem "u-case", "4.5.1", require: "u-case/with_activemodel_validation"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", "1.13.0", require: false

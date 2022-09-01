@@ -35,14 +35,14 @@ RSpec.describe Account::CurrentBalance do
       result = use_case.call(account_id: SecureRandom.uuid, amount: 10)
 
       expect(result).to be_failure
-      expect(result.value).to eq(account_id: ["not found"])
+      expect(result[:errors].messages).to eq(account_id: ["not found"])
     end
 
     it "denies balance to invalid account id" do
       result = use_case.call(account_id: "abc")
 
       expect(result).to be_failure
-      expect(result.value).to eq(account_id: ["is in invalid format"])
+      expect(result[:errors].messages).to eq(account_id: ["is not a valid UUID"])
     end
   end
 end

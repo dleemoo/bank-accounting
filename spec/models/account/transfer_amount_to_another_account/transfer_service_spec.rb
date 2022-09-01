@@ -44,12 +44,13 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
 
       result = nil
 
-      expect { result = use_case.call(source_account_id: source_account.id, target_account_id: target_account.id, amount: 100.01) }
+      params = { source_account_id: source_account.id, target_account_id: target_account.id, amount: 100.01 }
+      expect { result = use_case.call(params) }
         .to change(Transaction.where(account_id: source_account), :count).by(0)
         .and change(Transaction.where(account_id: target_account), :count).by(0)
 
       expect(result).to be_failure
-      expect(result.value).to eq(source_account_id: ["insufficient funds"])
+      expect(result[:errors].messages).to eq(source_account_id: ["insufficient funds"])
 
       expect(balance.call(account_id: source_account.id).value[:amount]).to eq(100)
       expect(balance.call(account_id: target_account.id).value[:amount]).to eq(0)
@@ -65,7 +66,7 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
         .and change(Operation, :count).by(0)
 
       expect(result).to be_failure
-      expect(result.value).to eq(amount: ["must be greater than 0"])
+      expect(result[:errors].messages).to eq(amount: ["must be greater than 0"])
     end
 
     it "does not allow the same account for source and target" do
@@ -76,35 +77,35 @@ RSpec.describe Account::TransferAmountToAnotherAccount do
         .and change(Operation, :count).by(0)
 
       expect(result).to be_failure
-      expect(result.value).to eq(target_account_id: ["is equal to source_account_id"])
+      expect(result[:errors].messages).to eq(target_account_id: ["is equal to source_account_id"])
     end
 
     it "denies transfers to inexistent source account" do
       result = use_case.call(source_account_id: SecureRandom.uuid, target_account_id: target_account.id, amount: 10)
 
       expect(result).to be_failure
-      expect(result.value).to eq(source_account_id: ["not found"])
+      expect(result[:errors].messages).to eq(source_account_id: ["not found"])
     end
 
     it "denies transfers to inexistent target account" do
       result = use_case.call(source_account_id: source_account.id, target_account_id: SecureRandom.uuid, amount: 10)
 
       expect(result).to be_failure
-      expect(result.value).to eq(target_account_id: ["not found"])
+      expect(result[:errors].messages).to eq(target_account_id: ["not found"])
     end
 
     it "denies transfers to invalid source account" do
       result = use_case.call(source_account_id: "abc", target_account_id: target_account.id, amount: 10)
 
       expect(result).to be_failure
-      expect(result.value).to eq(source_account_id: ["is in invalid format"])
+      expect(result[:errors].messages).to eq(source_account_id: ["is not a valid UUID"])
     end
 
     it "denies transfers to invalid target account" do
       result = use_case.call(source_account_id: source_account.id, target_account_id: "abc", amount: 10)
 
       expect(result).to be_failure
-      expect(result.value).to eq(target_account_id: ["is in invalid format"])
+      expect(result[:errors].messages).to eq(target_account_id: ["is not a valid UUID"])
     end
   end
 end

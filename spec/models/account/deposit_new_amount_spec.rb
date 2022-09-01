@@ -35,7 +35,7 @@ RSpec.describe Account::DepositNewAmount do
         .not_to change(Transaction, :count)
 
       expect(result).to be_failure
-      expect(result.value).to eq(amount: ["must be greater than 0"])
+      expect(result[:errors].messages).to eq(amount: ["must be greater than 0"])
     end
 
     it "denies deposit to inexistent account" do
@@ -45,7 +45,7 @@ RSpec.describe Account::DepositNewAmount do
         .not_to change(Transaction, :count)
 
       expect(result).to be_failure
-      expect(result.value).to eq(account_id: ["not found"])
+      expect(result[:errors].messages).to eq(account_id: ["not found"])
     end
 
     it "denies deposit to invalid account id" do
@@ -55,7 +55,7 @@ RSpec.describe Account::DepositNewAmount do
         .not_to change(Transaction, :count)
 
       expect(result).to be_failure
-      expect(result.value).to eq(account_id: ["is in invalid format"])
+      expect(result[:errors].messages).to eq(account_id: ["is not a valid UUID"])
     end
   end
 end

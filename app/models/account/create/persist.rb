@@ -8,7 +8,8 @@ class Account
       def call!
         Success(result: { account: Account.create!(name: name) })
       rescue ActiveRecord::RecordNotUnique
-        Failure(result: { name: ["already taken"] })
+        errors.add(:name, :taken)
+        Failure(:invalid_attributes, result: { errors: errors })
       end
     end
   end

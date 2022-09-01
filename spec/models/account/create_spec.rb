@@ -22,7 +22,7 @@ RSpec.describe Account::Create do
       result = use_case.call(name: "")
 
       expect(result).to be_failure
-      expect(result.value).to eq(name: ["is missing"])
+      expect(result[:errors].messages).to eq(name: ["can't be blank"])
     end
 
     it "dines duplicated account names" do
@@ -30,7 +30,7 @@ RSpec.describe Account::Create do
       result = use_case.call(name: "My Account")
 
       expect(result).to be_failure
-      expect(result.value).to eq(name: ["already taken"])
+      expect(result[:errors].messages).to eq(name: ["has already been taken"])
     end
   end
 end
