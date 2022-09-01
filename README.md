@@ -44,7 +44,7 @@ cd bank-accounting
 cp .example.env .env
 ./config/docker/development/build
 docker-compose run --rm bank-accounting bundle install
-docker-compose run --rm bank-accounting rails db:create db:migrate
+docker-compose run --rm bank-accounting bundle exec rails db:create db:migrate
 ```
 
 Feito estes passos, a qualquer momento a applicação poderá ser executada com o
